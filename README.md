@@ -8,7 +8,7 @@ The example is very simple:
 
 There are a main component and another component with specific route.\
 There is a state where (to be a very simple) I have only one state value.\
-Firstly, I want to load from local storage to the state (with eas encryption).\
+Firstly, I want to load from local storage to the state (with aes encryption).\
 Secondly I want to store the state in a memory storage.\
 Finally I want to show the state in every component (in that case in main component)\
 And I want to reuse the storage to read any value by key.
