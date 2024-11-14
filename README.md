@@ -4,7 +4,7 @@
 In this NG project I try to combine & reuse the mem storage, observable & local storage.
 The example is very simple:
 
-![example](http://url/to/img.png)
+![example](https://raw.githubusercontent.com/gelleicsaba/ng_reused_store/refs/heads/main/public/screenshot1.png)
 
 There are a main component and another component with specific route.\
 There is a state where (to be a very simple) I have only one state value.\
