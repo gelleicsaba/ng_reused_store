@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { AppStore, StateEventListener } from '../store/app.store'
 import { Subscription } from 'rxjs'
+import { aesKey } from './config/aesKey'
 
 @Component({
   selector: 'app-root',
@@ -18,12 +19,12 @@ export class AppComponent {
     private appStore: AppStore,
     private stateEvent :StateEventListener<any>
   ) {
-
+    this.appStore.storeStateFromLocalStorage("app-state", aesKey, {"userName": ""})
+    this.userName = this.appStore.getStateElement("userName", "")
   }
 
   ngOnInit(): void {
     this.userName = this.appStore.state.getStateElement("userName", "")
-
     this.eventSubscription = this.stateEvent.subscribe((data?: any) => {
       this.userName = this.appStore.state.getStateElement("userName", "")
     } )
@@ -31,7 +32,7 @@ export class AppComponent {
   }
 
   ngOnDestroy(): void {
-    if (this.eventSubscription !== undefined) {
+    if (this.eventSubscription) {
       this.eventSubscription.unsubscribe()
     }
   }

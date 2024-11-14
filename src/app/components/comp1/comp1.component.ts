@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 import { AppStore } from '../../../store/app.store'
 import { StateEventListener } from '../../../store/app.store'
-import { stat } from 'fs';
-
-const aesKey = "abc123"
+import { aesKey } from '../../config/aesKey'
 
 @Component({
   selector: 'app-comp1',
@@ -12,7 +10,7 @@ const aesKey = "abc123"
   imports: [FormsModule],
   templateUrl: './comp1.component.html'
 })
-export class Comp1Component implements OnInit {
+export class Comp1Component implements OnInit, OnDestroy {
   userName = ""
 
   constructor(
@@ -27,13 +25,15 @@ export class Comp1Component implements OnInit {
   ngOnInit(): void {
   }
 
-  setMessage(event: Event) {
-    console.log("setMessage")
+  setUserName(event: Event) {
     if(event) {
         this.appStore.setStateElement("userName", this.userName)
-        this.appStore.storeStateToLocalStorage("app-state", aesKey)
         this.stateEvent.emit(null)
     }
+  }
+
+  ngOnDestroy(): void {
+    this.appStore.storeStateToLocalStorage("app-state", aesKey)
   }
 
 }

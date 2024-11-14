@@ -1,27 +1,89 @@
-# Ngcompupdate
+# NG-store-reused
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.1.
+# Intro
+In this NG project I try to combine & reuse the mem storage, observable & local storage.
+The example is very simple:
 
-## Development server
+![example](http://url/to/img.png)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+There are a main component and another component with specific route.\
+There is a state where (to be a very simple) I have only one state value.\
+Firstly, I want to load from local storage to the state (with eas encryption).\
+Secondly I want to store the state in a memory storage.\
+Finally I want to show the state in every component (in that case in main component)\
+And I want to reuse the storage to read any value by key.
 
-## Code scaffolding
+## read write & save
+### Read state data from local storage, and apply in components
+```
+  constructor(
+      private appStore: AppStore,
+      private stateEvent :StateEventListener<any>
+  ) {
+    this.appStore.storeStateFromLocalStorage("app-state", aesKey, {"userName": ""})
+    this.userName = this.appStore.getStateElement("userName", "")
+    this.stateEvent.emit(null)
+  }
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Write state data to mem storage, and apply in components
+```
+  setUserName(event: Event) {
+    if(event) {
+        this.appStore.setStateElement("userName", this.userName)
+        this.stateEvent.emit(null)
+    }
+  }
+```
 
-## Build
+### Save into local storage, in onDestroy event
+```
+  ngOnDestroy(): void {
+    this.appStore.storeStateToLocalStorage("app-state", aesKey)
+  }
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+## All in one in the store/app.store.ts
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```
+Storage classes:
+   AppStore <-- Store <-- State
 
-## Running end-to-end tests
+Listener generic class:
+   StateEventListener<T>
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
 
-## Further help
+### Listener component(s)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Subcription & dependencies
+```
+  eventSubscription?: Subscription
+
+  constructor(
+    private appStore: AppStore,
+    private stateEvent :StateEventListener<any>
+  ) {
+    this.appStore.storeStateFromLocalStorage("app-state", aesKey, {"userName": ""})
+    this.userName = this.appStore.getStateElement("userName", "")
+  }
+```
+
+Subscribe & Unsubscribe
+```
+  ngOnInit(): void {
+    this.userName = this.appStore.state.getStateElement("userName", "")
+    this.eventSubscription = this.stateEvent.subscribe((data?: any) => {
+      this.userName = this.appStore.state.getStateElement("userName", "")
+    } )
+
+  }
+
+  ngOnDestroy(): void {
+    if (this.eventSubscription !== undefined) {
+      this.eventSubscription.unsubscribe()
+    }
+  }
+```
+

@@ -75,10 +75,6 @@ export class StateEventListener<T> {
     public subscribe(callback: Function) : Subscription {
         return this.listener.subscribe(callback)
     }
-
-    public unsubscribe() : void {
-        this.listener.unsubscribe()
-    }
 }
 
 /**
