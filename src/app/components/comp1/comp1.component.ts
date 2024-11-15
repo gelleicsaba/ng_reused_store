@@ -28,12 +28,13 @@ export class Comp1Component implements OnInit, OnDestroy {
   setUserName(event: Event) {
     if(event) {
         this.appStore.setStateElement("userName", this.userName)
+        this.appStore.storeStateToLocalStorage("app-state", aesKey)
         this.stateEvent.emit(null)
     }
   }
 
   ngOnDestroy(): void {
-    this.appStore.storeStateToLocalStorage("app-state", aesKey)
+    console.log("OnDestroy")
   }
 
 }
